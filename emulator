@@ -1,0 +1,299 @@
+#!/bin/bash
+
+url="https://github.com/ivan100-ivoop/"
+author="ivan(vanko)"
+version="0.1a"
+quast="Are you sure? "
+
+setArch="qemu-system-x86_64"
+noCompile="no"
+noReset="yes"
+startAutoKill="no"
+nameINITRD="core.gz"
+nameKernel="bzImage"
+rootDIR="rootfs/"
+target=${PWD}
+size=4G
+cpu=q35
+ram=1024
+ehdd=img1.raw
+hdd=armdisk.cow
+params="console=tty0"
+
+auto_kill () {
+ if [ ${startAutoKill} != "no" ]; then
+   echo "Auto Kill ${startAutoKill}"
+ fi
+}
+
+kill_emulator () {
+  read -p "${quast}" CONT
+  if [[ "${CONT,,}" = "y" || "${CONT,,}" = "yes" ]]; then
+     pkill emulator
+     pkill qemu-system-x86_64
+     pkill qemu-system-*
+     exit 1
+  else
+     echo -e "Killing Proccess is Cancel!."
+     exit 1
+  fi
+}
+
+info_verison () {
+ echo -e "\nversion......: ${version}"
+ echo -e "author.......: ${author}"
+ echo -e "web-site.....: ${url}\n"
+}
+
+info_emulator () {
+  echo -e "\n                              INFORMATION                          \n"
+  echo -e "            PATH..............:   ${target}"
+  echo -e "            KERNEL............:   ${nameKernel}"
+  echo -e "            ROOTFS............:   ${nameINITRD}"
+  echo -e "            HDD-NAME..........:   ${hdd}"
+  echo -e "            KERNEL-PATH.......:   ${kernel}"
+  echo -e "            ROOTFS-PATH.......:   ${dirRootfs}"
+  echo -e "            OUTPUT-DIR........:   ${output}"
+  echo -e "            BYPASS-COMPILE....:   ${noCompile}"
+  echo -e "            AUTO-KILL.........:   ${startAutoKill}\n"
+}
+
+emulator_help () {
+ echo -e "\nUsage: emulator [option] [arguments]\n"
+ echo -e "--ram, -r  <size> Ram Size for Emulation."
+ echo -e "--machine, -m <machine> Qumu Type of machine to use Emulator."
+ echo -e "--size, -s <size> Emulation HDD Image Size (is a dinamic)."
+ echo -e "--kernel, -ke <kernel name> Kernel Name/path default is on $PWD with name bzImage."
+ echo -e "--initrd, -i <initrd name> name of rootfs/initrd filename to use Emulator default is core.gz."
+ echo -e "--path, -p <target> Target Directory path defult is getting from $PWD."
+ echo -e "--root, -rp <path> Path to this rootfs/initrd file system folder."
+ echo -e "--version, -v Emulator Current Verison and some info."
+ echo -e "--kill, -k Killing Emulator."
+ echo -e "--autokill, -ak <time> Set time to auto kill Emulator (NOT READY)."
+ echo -e "--nocompile,-nc Bypass Compilation proccess and Emulate old build."
+ echo -e "--compile, -co Bypassing Emulator and only compiling rootfs/initrd file."
+ echo -e "--clear, -c Cleaning old build(s) or HDD Images."
+ echo -e "--reset, -rs Restaring console only active on end Emulator not valid for only compile or clear!."
+ echo -e "--set, -se <qemu-arm-static> With this you can change Startup Arch for default is qemu-system-x86_64.(NOT READY)"
+ echo -e "--help, -h Emulator Help Commands.\n"
+ info_verison
+}
+
+clear_hdds () {
+  echo "Cleaning.."
+  if [ -f "${hdd}" ]; then
+   rm ${hdd}
+  fi
+
+  if [ -f "${ehdd}" ]; then
+   rm ${ehdd}
+  fi
+  echo "Cleaning complited!"
+}
+
+
+emulator_compiler (){
+ echo "Staritng Compilation of ${nameINITRD}!"
+ cd ${dirRootfs}
+ find . | cpio -R root:root -H newc -o 2> /dev/null | gzip > ${output}
+ rootSize=$(ls -lah ${output} | awk -F " " {'print $5'})
+ echo "Compilated Successval!."
+ echo "OUTPUT-SIZE........: ${rootSize}"
+}
+
+emulator_disk () {
+ if [ ! -f "${ehdd}" ] && [ ! -f "${hdd}" ]; then
+   cd ${target}
+   echo "Creating HDD Image!"
+   echo "HDD-SIZE........: ${size}B"
+   qemu-img create -f raw ${ehdd} ${size} >> /dev/null
+   sleep 1
+   qemu-img create -o backing_file=${ehdd},backing_fmt=raw -f qcow2 ${hdd} >> /dev/null
+   echo "HDD Image Successval Created!"
+ fi
+}
+
+installer () {
+  REQUIRED_PKG="${1,,}"
+  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+  if [ "" = "$PKG_OK" ]; then
+    echo "No $REQUIRED_PKG. Installing $REQUIRED_PKG."
+    sudo apt-get --yes install $REQUIRED_PKG
+  fi
+}
+
+ishave_depends () {
+  echo "Cheking for missing Packages."
+  installer gzip
+  installer cpio
+  installer qemu
+  installer qemu-user-static
+  installer qemu-utils
+}
+
+check_oldBuild () {
+ if [ -f "${output}" ]; then
+  echo "Cleaining old Builds!"
+  rm -r ${output} >> /dev/null
+ fi
+}
+
+check_files () {
+ if [ -f "${ehdd}" ]; then
+  clear_hdds
+ fi
+
+ if [ -f "${hdd}" ]; then
+  clear_hdds
+ fi
+}
+
+emulator_start () {
+ echo "Staring Emulatior.."
+ qemu-system-x86_64 -m ${ram} -enable-kvm -machine ${cpu} -device intel-iommu -hda ${hdd} -kernel ${kernel} -initrd ${rootfs} -append "root=/dev/sda console=ttyS0" -D ${debug} -no-reboot -nographic -serial mon:stdio
+ echo "Emulatior is Stopped!"
+ check_files
+ if [ ${noReset} == "no" ]; then
+   reset >> /dev/null
+ fi
+ echo "Thanks for use Emulator."
+ exit 1
+}
+
+set_env () {
+ kernel=${target}/${nameKernel}
+ rootfs=output/${nameINITRD}
+ dirRootfs=${target}/${rootDIR}
+ output=${target}/${rootfs}
+ debug=${target}/output/debug.log
+ netParam="-netdev user,id=vmnic -device virtio-net-device,netdev=vmnic"
+ ishave_depends
+}
+
+for ((i=1;i<=$#;i++)); 
+do
+
+    if [[ ${!i} = "-ram" || ${!i} = "-r" ]]
+    then ((i++)) 
+        ram=${!i};
+    fi
+
+    if [[ ${!i} = "-size" || ${!i} = "-s" ]]
+    then ((i++))
+        size=${!i};
+    fi
+
+    if [[ ${!i} = "-path" || ${!i} = "-p" ]]
+    then ((i++))
+        target=${!i};
+    fi
+
+    if [[ ${!i} = "--machine" || ${!i} = "-m" ]]
+    then ((i++))
+        cpu=${!i};
+    fi
+
+    if [[ ${!i} = "--help" || ${!i} = "-h" ]]
+    then ((i++))
+        emulator_help
+        exit 1
+    fi
+
+    if [[ ${!i} = "--root" || ${!i} = "-rp" ]]
+    then ((i++))
+        rootDIR=${!i};
+    fi
+
+    if [[ ${!i} = "--set" || ${!i} = "-se" ]]
+    then ((i++))
+        setArch=${!i};
+    fi
+
+    if [[ ${!i} = "--initrd" || ${!i} = "-i" ]]
+    then ((i++))
+        nameINITRD=${!i};
+    fi
+
+    if [[ ${!i} = "--kernel" || ${!i} = "-ke" ]]
+    then ((i++))
+        nameKernel=${!i};
+    fi
+
+    if [[ ${!i} = "--kill" || ${!i} = "-k" ]]
+    then ((i++))
+        kill_emulator
+        exit 1
+    fi
+
+    if [[ ${!i} = "--version" || ${!i} = "-v" ]]
+    then ((i++))
+        info_verison
+        exit 1
+    fi
+
+    if [[ ${!i} = "--reset" || ${!i} = "-rs" ]]
+    then ((i++))
+        noReset="no";
+    fi
+
+    if [[ ${!i} = "--autokill" || ${!i} = "-ac" ]]
+    then ((i++))
+        startAutoKill=${!i}
+    fi
+
+    if [[ ${!i} = "--clear" || ${!i} = "-c" ]]
+    then ((i++))
+       set_env
+       info_emulator
+       read -p "${quast}" CONT
+       if [[ "${CONT,,}" = "y" || "${CONT,,}" = "yes" ]]; then
+          check_oldBuild
+          check_files
+          exit 1
+       else
+          echo "Cleaning is Cancel!."
+          exit 1
+       fi
+    fi
+
+    if [[ ${!i} = "--compile" || ${!i} = "-co" ]]
+    then ((i++))
+       set_env
+       info_emulator
+       read -p "${quast}" CONT
+       if [[ "${CONT,,}" = "y" || "${CONT,,}" = "yes" ]]; then
+          check_oldBuild
+          check_files
+          emulator_compiler
+          exit 1
+       else
+          echo "Compilation is Cancel!."
+          exit 1
+       fi
+    fi
+
+    if [[ ${!i} = "--nocompile" || ${!i} = "-nc" ]]
+    then ((i++))
+       noCompile="yes"
+    fi
+
+done;
+
+set_env
+info_emulator
+read -p "${quast}" CONT
+if [[ "${CONT,,}" = "y" || "${CONT,,}" = "yes" ]]; then
+  if [ ${noCompile} == "no" ]; then
+    check_oldBuild
+    check_files
+    emulator_compiler
+  fi
+  emulator_disk
+  emulator_start
+  auto_kill
+  exit 1
+else
+  echo "Run is Cancel!."
+  exit 1
+fi
+
