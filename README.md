@@ -17,6 +17,8 @@ All Depends are auto instaling if some one is missing.
  - [QEMU](https://en.wikipedia.org/wiki/QEMU)
  - [GZIP](https://en.wikipedia.org/wiki/Gzip)
  - [CPIO](https://en.wikipedia.org/wiki/Cpio)
+ - [WGET](https://en.wikipedia.org/wiki/Wget)
+ - 
 
 ## Installing
 ` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
