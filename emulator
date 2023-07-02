@@ -41,41 +41,41 @@ check_and_update () {
     fi
 }
 
-is_package_installed_with_apt() {
+is_package_installed_with_apt () {
     dpkg -s "$1" &> /dev/null
 }
 
-is_package_installed_with_yum() {
+is_package_installed_with_yum () {
     yum list installed "$1" &> /dev/null
 }
 
-is_package_installed_with_dnf() {
+is_package_installed_with_dnf () {
     dnf list installed "$1" &> /dev/null
 }
 
-is_package_installed_with_pacman() {
+is_package_installed_with_pacman () {
     pacman -Qs "$1" &> /dev/null
 }
 
-install_with_apt() {
+install_with_apt () {
     sudo apt-get update >> /dev/null
     sudo apt-get install -y "$1" >> /dev/null
 }
 
-install_with_yum() {
+install_with_yum () {
     sudo yum install -y "$1" >> /dev/null
 }
 
-install_with_dnf() {
+install_with_dnf () {
     sudo dnf install -y "$1" >> /dev/null
 }
 
-install_with_pacman() {
+install_with_pacman () {
     sudo pacman -Syu --noconfirm >> /dev/null
     sudo pacman -S --noconfirm "$1" >> /dev/null
 }
 
-detect_package_manager() {
+detect_package_manager () {
     if [[ -n "$(command -v apt-get)" ]]; then
         package_manager="apt"
     elif [[ -n "$(command -v yum)" ]]; then
@@ -91,7 +91,7 @@ detect_package_manager() {
     fi
 }
 
-is_package_installed() {
+is_package_installed () {
     local package="$1"
     local package_manager="$2"
 
@@ -115,7 +115,7 @@ is_package_installed() {
     esac
 }
 
-install_package() {
+install_package () {
     local package="$1"
     local package_manager="$2"
 
@@ -138,8 +138,6 @@ install_package() {
                 exit 1
                 ;;
         esac
-    else
-        echo -e "Package $package is already installed."
     fi
 }
 
