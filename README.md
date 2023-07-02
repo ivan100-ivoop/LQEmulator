@@ -42,3 +42,7 @@ All Depends are auto instaling if some one is missing.
 - `--install-packages, -inp Checking for missing packages like. wget,cpio,qemu,gzip and etc!.`
 - `--mupdate, -mu Manual Updating downloading and installing direct.`
 - `--help, -h Emulator Help Commands.`
+
+## Tested on 
+- KaliLinux
+- Debian 11
