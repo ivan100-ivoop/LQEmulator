@@ -21,8 +21,8 @@ All Depends are auto instaling if some one is missing.
  - 
 
 ## Installing
-` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
-` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | sudo bash`
+- ` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
+- ` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | sudo bash`
 
 ## Help commands
 `Usage: emulator [option] [arguments]`
