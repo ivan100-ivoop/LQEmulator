@@ -19,4 +19,4 @@ All Depends are auto instaling if some one is missing.
  - [CPIO](#)
 
 ## Installing
-` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/emulator | bash`
+` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
