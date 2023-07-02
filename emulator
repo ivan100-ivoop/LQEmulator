@@ -303,10 +303,10 @@ set_env () {
  output=${target}/${rootfs}
  debug=${target}/output/debug.log
  netParam="-netdev user,id=vmnic -device virtio-net-device,netdev=vmnic"
- ishave_depends
 }
 
 check_and_update
+ishave_depends
 
 for ((i=1;i<=$#;i++)); 
 do
