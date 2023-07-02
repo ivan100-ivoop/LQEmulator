@@ -23,7 +23,7 @@ ehdd=img1.raw
 hdd=armdisk.cow
 netParam=""
 
-check_and_update() {
+check_and_update () {
     latest_version=$(wget -qO- "$version_url")
     if [[ "$latest_version" != "$current_version" ]]; then
         echo -e "A new version ($latest_version) is available. Updating..."
