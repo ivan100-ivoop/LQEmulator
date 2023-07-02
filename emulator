@@ -2,7 +2,11 @@
 
 url="https://github.com/ivan100-ivoop/"
 author="ivan(vanko)"
-version="0.1a"
+current_version="0.1a"
+version_url="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/update/version.txt"
+download_update="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/emulator"
+store_update="/tmp/updated_emulator"
+file_path="/bin/emulator"
 quast="Do you really want to proceed? "
 
 noCompile="no"
@@ -18,6 +22,23 @@ ram=1024
 ehdd=img1.raw
 hdd=armdisk.cow
 netParam=""
+
+check_and_update() {
+    latest_version=$(curl -s "$version_url")
+    if [[ "$latest_version" != "$current_version" ]]; then
+        echo -e "A new version ($latest_version) is available. Updating..."
+        wget -q ${download_update} -O ${store_update} >> /dev/null
+        if [ $? -eq 0 ]; then
+            mv ${store_update} ${file_path} >> /dev/null
+            chmod +x ${file_path} >> /dev/null
+            echo -e "Update complete!"
+            exit 1
+        else
+            echo -e "Failed to download the updated version. Update aborted."
+            rm ${store_update} >> /dev/null
+        fi
+    fi
+}
 
 auto_kill () {
  if [ ${startAutoKill} != "no" ]; then
@@ -38,8 +59,8 @@ kill_emulator () {
   fi
 }
 
-info_verison () {
- echo -e "\nversion......: ${version}"
+info_version () {
+ echo -e "\nversion......: ${current_version}"
  echo -e "author.......: ${author}"
  echo -e "web-site.....: ${url}\n"
 }
@@ -66,7 +87,7 @@ emulator_help () {
  echo -e "--initrd, -i <initrd name> name of rootfs/initrd filename to use Emulator default is core.gz."
  echo -e "--path, -p <target> Target Directory path defult is getting from $PWD."
  echo -e "--root, -rp <path> Path to this rootfs/initrd file system folder."
- echo -e "--version, -v Emulator Current Verison and some info."
+ echo -e "--version, -v Emulator Current Version and some info."
  echo -e "--kill, -k Killing Emulator."
  echo -e "--autokill, -ak <time> Set time to auto kill Emulator (NOT READY)."
  echo -e "--nocompile,-nc Bypass Compilation proccess and Emulate old build."
@@ -75,7 +96,7 @@ emulator_help () {
  echo -e "--reset, -rs Restaring console only active on end Emulator not valid for only compile or clear!."
  echo -e "--set, -se <qemu-arm-static> With this you can change Startup Arch for default is qemu-system-x86_64.(NOT READY)"
  echo -e "--help, -h Emulator Help Commands.\n"
- info_verison
+ info_version
 }
 
 clear_hdds () {
@@ -128,6 +149,7 @@ ishave_depends () {
   installer qemu
   installer qemu-user-static
   installer qemu-utils
+  installer wget
 }
 
 check_oldBuild () {
@@ -168,6 +190,8 @@ set_env () {
  netParam="-netdev user,id=vmnic -device virtio-net-device,netdev=vmnic"
  ishave_depends
 }
+
+check_and_update
 
 for ((i=1;i<=$#;i++)); 
 do
@@ -227,7 +251,7 @@ do
 
     if [[ ${!i} = "--version" || ${!i} = "-v" ]]
     then ((i++))
-        info_verison
+        info_version
         exit 1
     fi
 
