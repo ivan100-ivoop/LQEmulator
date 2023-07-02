@@ -2,7 +2,7 @@
 
 url="https://github.com/ivan100-ivoop/"
 author="ivan(vanko)"
-current_version="0.1a"
+current_version="0.2a"
 version_url="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/update/version.txt"
 download_update="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/emulator"
 store_update="/tmp/updated_emulator"
@@ -95,6 +95,7 @@ emulator_help () {
  echo -e "--clear, -c Cleaning old build(s) or HDD Images."
  echo -e "--reset, -rs Restaring console only active on end Emulator not valid for only compile or clear!."
  echo -e "--set, -se <qemu-arm-static> With this you can change Startup Arch for default is qemu-system-x86_64.(NOT READY)"
+ echo -e "--install-packages, -inp Checking for missing packages like. wget,cpio,qemu,gzip and etc!."
  echo -e "--help, -h Emulator Help Commands.\n"
  info_version
 }
@@ -196,17 +197,23 @@ check_and_update
 for ((i=1;i<=$#;i++)); 
 do
 
-    if [[ ${!i} = "-ram" || ${!i} = "-r" ]]
+    if [[ ${!i} = "--ram" || ${!i} = "-r" ]]
     then ((i++)) 
         ram=${!i};
     fi
 
-    if [[ ${!i} = "-size" || ${!i} = "-s" ]]
+    if [[ ${!i} = "--size" || ${!i} = "-s" ]]
     then ((i++))
         size=${!i};
     fi
 
-    if [[ ${!i} = "-path" || ${!i} = "-p" ]]
+    if [[ ${!i} = "--install-packages" || ${!i} = "-inp" ]]
+    then ((i++))
+        ishave_depends
+        exit 1
+    fi
+
+    if [[ ${!i} = "--path" || ${!i} = "-p" ]]
     then ((i++))
         target=${!i};
     fi
