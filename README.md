@@ -27,9 +27,9 @@ All Depends are auto instaling if some one is missing.
 - `--ram, -r  <size> Ram Size for Emulation.`
 - `--machine, -m <machine> Qumu Type of machine to use Emulator.`
 - `--size, -s <size> Emulation HDD Image Size (is a dinamic).`
-- `--kernel, -ke <kernel name> Kernel Name/path default is on /home/kali with name bzImage.`
+- `--kernel, -ke <kernel name> Kernel Name/path default is on <PWD> with name bzImage.`
 - `--initrd, -i <initrd name> name of rootfs/initrd filename to use Emulator default is core.gz.`
-- `--path, -p <target> Target Directory path defult is getting from /home/kali.`
+- `--path, -p <target> Target Directory path defult is getting from <PWD>.`
 - `--root, -rp <path> Path to this rootfs/initrd file system folder.`
 - `--version, -v Emulator Current Version and some info.`
 - `--kill, -k Killing Emulator.`
