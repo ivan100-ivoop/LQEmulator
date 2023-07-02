@@ -41,6 +41,108 @@ check_and_update() {
     fi
 }
 
+is_package_installed_with_apt() {
+    dpkg -s "$1" &> /dev/null
+}
+
+is_package_installed_with_yum() {
+    yum list installed "$1" &> /dev/null
+}
+
+is_package_installed_with_dnf() {
+    dnf list installed "$1" &> /dev/null
+}
+
+is_package_installed_with_pacman() {
+    pacman -Qs "$1" &> /dev/null
+}
+
+install_with_apt() {
+    sudo apt-get update >> /dev/null
+    sudo apt-get install -y "$1" >> /dev/null
+}
+
+install_with_yum() {
+    sudo yum install -y "$1" >> /dev/null
+}
+
+install_with_dnf() {
+    sudo dnf install -y "$1" >> /dev/null
+}
+
+install_with_pacman() {
+    sudo pacman -Syu --noconfirm >> /dev/null
+    sudo pacman -S --noconfirm "$1" >> /dev/null
+}
+
+detect_package_manager() {
+    if [[ -n "$(command -v apt-get)" ]]; then
+        package_manager="apt"
+    elif [[ -n "$(command -v yum)" ]]; then
+        package_manager="yum"
+    elif [[ -n "$(command -v dnf)" ]]; then
+        package_manager="dnf"
+    elif [[ -n "$(command -v pacman)" ]]; then
+        package_manager="pacman"
+    else
+        echo -e "Unable to detect the package manager."
+		echo -e "Please install the required packages manually."
+        exit 1
+    fi
+}
+
+is_package_installed() {
+    local package="$1"
+    local package_manager="$2"
+
+    case "$package_manager" in
+        apt)
+            is_package_installed_with_apt "$package"
+            ;;
+        yum)
+            is_package_installed_with_yum "$package"
+            ;;
+        dnf)
+            is_package_installed_with_dnf "$package"
+            ;;
+        pacman)
+            is_package_installed_with_pacman "$package"
+            ;;
+        *)
+            echo -e "Unsupported package manager."
+            exit 1
+            ;;
+    esac
+}
+
+install_package() {
+    local package="$1"
+    local package_manager="$2"
+
+    if ! is_package_installed "$package" "$package_manager"; then
+        case "$package_manager" in
+            apt)
+                install_with_apt "$package"
+                ;;
+            yum)
+                install_with_yum "$package"
+                ;;
+            dnf)
+                install_with_dnf "$package"
+                ;;
+            pacman)
+                install_with_pacman "$package"
+                ;;
+            *)
+                echo -e "Unsupported package manager."
+                exit 1
+                ;;
+        esac
+    else
+        echo -e "Package $package is already installed."
+    fi
+}
+
 manual_update () {
   echo -e "Updating..."
   wget -q ${download_update} -O ${store_update} >> /dev/null
@@ -153,12 +255,8 @@ emulator_disk () {
 
 installer () {
   REQUIRED_PKG="${1,,}"
-  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
-  if [ "" = "$PKG_OK" ]; then
-    echo -e "No $REQUIRED_PKG."
-    echo -e "Installing $REQUIRED_PKG."
-    sudo apt-get --yes install $REQUIRED_PKG >> /dev/null
-  fi
+  detect_package_manager
+  install_package "$REQUIRED_PKG" "$package_manager"
 }
 
 ishave_depends () {
