@@ -22,11 +22,10 @@ All Depends are auto instaling if some one is missing.
 ` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
 
 ## Help commands
-`
-Usage: emulator [option] [arguments]
+`Usage: emulator [option] [arguments]`
 
---ram, -r  <size> Ram Size for Emulation.
---machine, -m <machine> Qumu Type of machine to use Emulator.
+- `--ram, -r  <size> Ram Size for Emulation.`
+- `--machine, -m <machine> Qumu Type of machine to use Emulator.`
 --size, -s <size> Emulation HDD Image Size (is a dinamic).
 --kernel, -ke <kernel name> Kernel Name/path default is on /home/kali with name bzImage.
 --initrd, -i <initrd name> name of rootfs/initrd filename to use Emulator default is core.gz.
