@@ -7,8 +7,8 @@ download_and_execute() {
     wget -q ${script_url} -O ${script_output}
     if [ $? -eq 0 ]; then
       chmod +x ${script_output} >> /dev/null
-      echo -e "Install complete!"
       emulator -v
+      echo -e "Install complete!"
     else
       echo -e "Failed to download. Install aborted."
       rm ${script_output} >> /dev/null
