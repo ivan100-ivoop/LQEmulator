@@ -118,7 +118,7 @@ emulator_compiler (){
  find . | cpio -R root:root -H newc -o 2> /dev/null | gzip > ${output}
  rootSize=$(ls -lah ${output} | awk -F " " {'print $5'})
  echo -e "Compilated Successval!."
- echo =e "OUTPUT-SIZE........: ${rootSize}"
+ echo -e "OUTPUT-SIZE........: ${rootSize}"
 }
 
 emulator_disk () {
@@ -138,7 +138,7 @@ installer () {
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
   if [ "" = "$PKG_OK" ]; then
     echo "No $REQUIRED_PKG. Installing $REQUIRED_PKG."
-    sudo apt-get --yes install $REQUIRED_PKG
+    sudo apt-get --yes install $REQUIRED_PKG >> /dev/null
   fi
 }
 
