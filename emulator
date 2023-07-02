@@ -2,7 +2,7 @@
 
 url="https://github.com/ivan100-ivoop/"
 author="ivan(vanko)"
-current_version="0.2a"
+current_version="0.3a"
 version_url="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/update/version.txt"
 download_update="https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/emulator"
 store_update="/tmp/updated_emulator"
