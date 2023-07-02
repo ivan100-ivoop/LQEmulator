@@ -14,9 +14,9 @@ With LQEmulator you also can run this pack on x86_64 or arm depend of you files.
 - To dissmis using ever time -p <path> you can ony cd <path> also by default this folder from geting files is rootfs/ to change it i use -rp <folder> or --root <folder> 
 ## Depends
 All Depends are auto instaling if some one is missing.
- - [QEMU](https://www.qemu.org)
- - [GUNZIP](#)
- - [CPIO](#)
+ - [QEMU](https://en.wikipedia.org/wiki/QEMU)
+ - [GZIP](https://en.wikipedia.org/wiki/Gzip)
+ - [CPIO](https://en.wikipedia.org/wiki/Cpio)
 
 ## Installing
 ` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/installer | bash`
