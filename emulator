@@ -3,9 +3,8 @@
 url="https://github.com/ivan100-ivoop/"
 author="ivan(vanko)"
 version="0.1a"
-quast="Are you sure? "
+quast="Do you really want to proceed? "
 
-setArch="qemu-system-x86_64"
 noCompile="no"
 noReset="yes"
 startAutoKill="no"
@@ -18,7 +17,7 @@ cpu=q35
 ram=1024
 ehdd=img1.raw
 hdd=armdisk.cow
-params="console=tty0"
+netParam=""
 
 auto_kill () {
  if [ ${startAutoKill} != "no" ]; then
@@ -34,7 +33,7 @@ kill_emulator () {
      pkill qemu-system-*
      exit 1
   else
-     echo -e "Killing Proccess is Cancel!."
+     echo -e "Killing Process is Cancel!."
      exit 1
   fi
 }
@@ -97,8 +96,8 @@ emulator_compiler (){
  cd ${dirRootfs}
  find . | cpio -R root:root -H newc -o 2> /dev/null | gzip > ${output}
  rootSize=$(ls -lah ${output} | awk -F " " {'print $5'})
- echo "Compilated Successval!."
- echo "OUTPUT-SIZE........: ${rootSize}"
+ echo -e "Compilated Successval!."
+ echo =e "OUTPUT-SIZE........: ${rootSize}"
 }
 
 emulator_disk () {
@@ -150,13 +149,13 @@ check_files () {
 
 emulator_start () {
  echo "Staring Emulatior.."
- qemu-system-x86_64 -m ${ram} -enable-kvm -machine ${cpu} -device intel-iommu -hda ${hdd} -kernel ${kernel} -initrd ${rootfs} -append "root=/dev/sda console=ttyS0" -D ${debug} -no-reboot -nographic -serial mon:stdio
+ qemu-system-x86_64 -m ${ram} -enable-kvm -machine ${cpu} -device intel-iommu -hda ${hdd} -kernel ${kernel} -initrd ${rootfs} -append "root=/dev/sda console=ttyS0" ${netParam} -no-reboot -nographic -serial mon:stdio
  echo "Emulatior is Stopped!"
  check_files
  if [ ${noReset} == "no" ]; then
    reset >> /dev/null
  fi
- echo "Thanks for use Emulator."
+ echo -e "Thanks for using the Emulator."
  exit 1
 }
 
@@ -206,7 +205,8 @@ do
 
     if [[ ${!i} = "--set" || ${!i} = "-se" ]]
     then ((i++))
-        setArch=${!i};
+        emulator_help
+        exit 1
     fi
 
     if [[ ${!i} = "--initrd" || ${!i} = "-i" ]]
