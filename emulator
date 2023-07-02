@@ -34,10 +34,26 @@ check_and_update() {
             echo -e "Update complete!"
             exit 1
         else
-            echo -e "Failed to download the updated version. Update aborted."
+            echo -e "Failed to download the updated version."
+            echo -e "Update aborted."
             rm ${store_update} >> /dev/null
         fi
     fi
+}
+
+manual_update () {
+  echo -e "Updating..."
+  wget -q ${download_update} -O ${store_update} >> /dev/null
+  if [ $? -eq 0 ]; then
+     mv ${store_update} ${file_path} >> /dev/null
+     chmod +x ${file_path} >> /dev/null
+     echo -e "Update complete!"
+     exit 1
+  else
+     echo -e "Failed to download the Update. "
+     echo -e "Update aborted."
+     rm ${store_update} >> /dev/null
+  fi
 }
 
 auto_kill () {
@@ -96,6 +112,7 @@ emulator_help () {
  echo -e "--reset, -rs Restaring console only active on end Emulator not valid for only compile or clear!."
  echo -e "--set, -se <qemu-arm-static> With this you can change Startup Arch for default is qemu-system-x86_64.(NOT READY)"
  echo -e "--install-packages, -inp Checking for missing packages like. wget,cpio,qemu,gzip and etc!."
+ echo -e "--mupdate, -mu Manual Updating downloading and installing direct."
  echo -e "--help, -h Emulator Help Commands.\n"
  info_version
 }
@@ -138,7 +155,8 @@ installer () {
   REQUIRED_PKG="${1,,}"
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
   if [ "" = "$PKG_OK" ]; then
-    echo "No $REQUIRED_PKG. Installing $REQUIRED_PKG."
+    echo -e "No $REQUIRED_PKG."
+    echo -e "Installing $REQUIRED_PKG."
     sudo apt-get --yes install $REQUIRED_PKG >> /dev/null
   fi
 }
@@ -253,6 +271,12 @@ do
     if [[ ${!i} = "--kill" || ${!i} = "-k" ]]
     then ((i++))
         kill_emulator
+        exit 1
+    fi
+
+    if [[ ${!i} = "--mupdate" || ${!i} = "-mu" ]]
+    then ((i++))
+        manual_update
         exit 1
     fi
 
