@@ -44,5 +44,5 @@ All Depends are auto instaling if some one is missing.
 - `--help, -h Emulator Help Commands.`
 
 ## Tested on 
-- KaliLinux
+- Kalilinux (WSL2)
 - Debian 11
