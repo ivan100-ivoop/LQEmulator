@@ -8,7 +8,7 @@ download_and_execute() {
     if [ $? -eq 0 ]; then
       chmod +x ${script_output} >> /dev/null
       echo -e "Install complete!"
-      emulator -v
+      emulator -inp && emulator -v
     else
       echo -e "Failed to download. Install aborted."
       rm ${script_output} >> /dev/null
