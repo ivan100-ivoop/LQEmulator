@@ -6,7 +6,6 @@ LQEmulator is easy to use linux rootfs/initrd pack tool with this tool you will 
 With LQEmulator you also can run this pack on x86_64 or arm depend of you files.
 
 # Example
-
 - pack + run (emulator -p /home/user/target -i initrd/)
 - packing without run it (emulator -p /home/user/target -rp initrd/ -co)
 - run it without packing (emulator -p /home/user/target -rp initrd/ -noc )
@@ -19,3 +18,5 @@ All Depends are auto instaling if some one is missing.
  - [GUNZIP](#)
  - [CPIO](#)
 
+## Installing
+` wget -qO- https://raw.githubusercontent.com/ivan100-ivoop/LQEmulator/main/emulator | bash`
